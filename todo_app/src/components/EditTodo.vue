@@ -1,18 +1,18 @@
 <template>
-    <div id="add-todo">
-        <div class="container">
+  <div id="edit-todo">
+      <div class="container" v-if="todo">
             <h2 class="add-todo-header">ADD A TODO</h2>
             <label for="dzialanie" class="label">Działanie: </label>
-            <input type="text" name="dzialanie" id="dzialanie" v-model="dzialanie" class="input">
+            <input type="text" name="dzialanie" id="dzialanie" v-model="todo.dzial" class="input">
             <label for="odpowiedzialny" class="label">Odpowiedzialny: </label>
-            <input type="text" name="odpowiedzialny" id="odpowiedzialny" v-model="odpowiedzialny" class="input">
+            <input type="text" name="odpowiedzialny" id="odpowiedzialny" v-model="todo.odpowiedz" class="input">
             <label for="data" class="label">Data wykonania: </label>
-            <input type="text" name="data" id="data" v-model="data" class="input">
+            <input type="text" name="data" id="data" v-model="todo.data" class="input">
             <label for="stan" class="label">Stan wykonania: </label>
-            <input type="text" name="stan" id="stan" v-model="stan" class="input">
-            <button @click="addTodo()">Add a todo!</button>
+            <input type="text" name="stan" id="stan" v-model="todo.stan" class="input">
+            <button @click="editTodo()">Edit a todo!</button>
         </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -20,20 +20,25 @@ import db from '@/firebase/init'
 export default {
     data(){
         return{
-            dzialanie: null,
-            odpowiedzialny: null,
-            data: null,
-            stan: null
+            todo: null
         }
     },
+    beforeCreate(){
+        let ref = db.collection('todos').doc(this.$route.params.todo_id)
+        ref.get().then(doc => {
+                let todo = doc.data()
+                todo.id = doc.id
+                this.todo = todo
+        })
+    },
     methods: {
-        addTodo(){
-            if(this.dzialanie!=null && this.odpowiedzialny!=null && this.data!=null & this.stan!=null){
-                db.collection('todos').add({
-                dzial: this.dzialanie,
-                odpowiedz: this.odpowiedzialny,
-                data: this.data,
-                stan: this.stan
+        editTodo(){
+            if(this.todo.dzial!=null && this.todo.odpowiedz!=null && this.todo.data!=null & this.todo.stan!=null){
+                db.collection('todos').doc(this.todo.id).update({
+                dzial: this.todo.dzial,
+                odpowiedz: this.todo.odpowiedz,
+                data: this.todo.data,
+                stan: this.todo.stan
                 }).then(() => {
                     this.$router.push({name: "Todos"})
                 }).catch(err => {

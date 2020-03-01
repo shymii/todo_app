@@ -10,12 +10,17 @@
                     <div>Data wykonania</div>
                     <div>Stan wykonania</div>
                 </li>
-                <li class="todo-list-item" v-for="todo in todos" :key="todo">
-                    <div>{{ todo.num }}</div>
+                <li class="todo-list-item" v-for="(todo, idx) in todos" :key="idx">
+                    <div>{{ todo.number }}</div>
                     <div>{{ todo.dzial }}</div>
-                    <div>{{ todo.odp }}</div>
+                    <div>{{ todo.odpowiedz }}</div>
                     <div>{{ todo.data }}</div>
                     <div>{{ todo.stan }}</div>
+                    <router-link :to="{ name: 'EditTodo', params: { todo_id: todo.id }}">
+                        <i class="material-icons edit">edit</i>
+                    </router-link>
+                    <i class="fas fa-trash-alt" @click="delTodo(todo.id)"></i>
+                    
                 </li>
             </ul>
             <button class="go-add" @click="goToAdd()">Add a todo</button>
@@ -24,24 +29,44 @@
 </template>
 
 <script>
+import db from '@/firebase/init'
 export default {
     data(){
         return{
-            todos: [
-                {
-                num: '1',
-                dzial: 'hehs',
-                odp: 'kowalski',
-                data: '27.11.21',
-                stan: 'X'
-                }
-            ]
+            todos: []
         }
     },
     methods: {
+        takeTodos(){
+            let a = 0;
+            db.collection('todos').get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    let todo = doc.data()
+                    todo.id = doc.id
+                    todo.number = a+1
+                    a++
+                    this.todos.push(todo)
+                })
+            }).catch(err => console.log(err))
+        },
         goToAdd(){
             this.$router.push({name: 'AddTodo'})
+        },
+        goEdit(){
+            this.$router.push({name: 'EditTodo', params: {todo_id: this.todo.id}})
+        },
+        delTodo(id){
+            db.collection('todos').doc(id).delete()
+                .then(() => {
+                    this.todos = []
+                    this.takeTodos()
+                })
+                .catch(err => console.log(err))
         }
+    },
+    created(){
+        this.takeTodos()
     }
 }
 </script>
@@ -60,6 +85,7 @@ export default {
 .todo-header{
     margin-bottom: 3em;
     text-align: center;
+    font-weight: 200;
 }
 
 .todo-list{
@@ -72,7 +98,7 @@ li{
     display: block;
     display: flex;
 }
-li>*{
+li>div{
     flex-basis: 22.5%;
     padding: 1em;
     text-align: center;
@@ -88,12 +114,14 @@ li>*:nth-child(1){
 
 .go-add{
     padding: 1em;
-    border: none;
+    background: none;
     border: 1px solid #57ACC9;
     border-radius: .5em;
-    color: #57ACC9;
-    background-color: #eee;
     margin-top: 1em;
     justify-self: end;
+    cursor: pointer;
+}
+.go-add:hover{
+    background: #57ACC9;
 }
 </style>
