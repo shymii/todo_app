@@ -16,14 +16,19 @@
                     <div>{{ todo.odpowiedz }}</div>
                     <div>{{ todo.data }}</div>
                     <div>{{ todo.stan }}</div>
-                    <router-link :to="{ name: 'EditTodo', params: { todo_id: todo.id }}">
-                        <i class="material-icons edit">edit</i>
-                    </router-link>
-                    <i class="fas fa-trash-alt" @click="delTodo(todo.id)"></i>
-                    
+                    <div class="icon">
+                        <img class="icon-img" @click="goEdit(todo.id)" src="../assets/edit.png" style="max-width:50%; height: auto;" alt="edit">
+                    </div>
+                    <div class="icon">
+                        <img class="icon-img" @click="delTodo(todo.id)" src="../assets/delete.png" style="max-width:50%; height: auto;" alt="delete">
+                    </div>
                 </li>
             </ul>
             <button class="go-add" @click="goToAdd()">Add a todo</button>
+        </div>
+        <div class="copy">
+            <div>Icons made by <a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+            <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></div>
         </div>
     </div>
 </template>
@@ -48,13 +53,13 @@ export default {
                     a++
                     this.todos.push(todo)
                 })
-            }).catch(err => console.log(err))
+            }).catch()
         },
         goToAdd(){
             this.$router.push({name: 'AddTodo'})
         },
-        goEdit(){
-            this.$router.push({name: 'EditTodo', params: {todo_id: this.todo.id}})
+        goEdit(id){
+            this.$router.push({name: 'EditTodo', params: {todo_id: id}})
         },
         delTodo(id){
             db.collection('todos').doc(id).delete()
@@ -62,7 +67,7 @@ export default {
                     this.todos = []
                     this.takeTodos()
                 })
-                .catch(err => console.log(err))
+                .catch()
         }
     },
     created(){
@@ -73,7 +78,11 @@ export default {
 
 <style scoped>
 *{
-    font-family: sans-serif;
+    font-family: 'Poppins';
+    box-sizing: border-box;
+}
+#todos{
+    overflow: hidden;
 }
 .container{
     width: 60%;
@@ -83,9 +92,11 @@ export default {
 }
 
 .todo-header{
+    font-family: 'Montserrat';
     margin-bottom: 3em;
     text-align: center;
     font-weight: 200;
+    font-size: 2em;
 }
 
 .todo-list{
@@ -94,18 +105,26 @@ export default {
     width: 100%;
 }
 
+.todo-list-header{
+    display: block;
+    display: grid;
+    grid-template-columns: .3fr 1fr 1fr 1fr 1fr .7fr;
+}
+
 li{
     display: block;
-    display: flex;
+    display: grid;
+    grid-template-columns: .3fr 1fr 1fr 1fr 1fr .35fr .35fr;
+    margin-bottom: 1em;
 }
 li>div{
-    flex-basis: 22.5%;
-    padding: 1em;
+    box-sizing: border-box;
+    padding: .5em;
     text-align: center;
-    border: 1px solid #57ACC9;
+    border-right: 1px solid #57ACC9;
 }
-li>*:nth-child(1){
-    flex-basis: 10%;
+.icon-img{
+    cursor: pointer;
 }
 
 .todo-list-header{
@@ -123,5 +142,18 @@ li>*:nth-child(1){
 }
 .go-add:hover{
     background: #57ACC9;
+}
+.copy{
+    position: fixed;
+    bottom: 0;
+    background: #eee;
+    text-align: center;
+    width: 100%;
+    font-size: .5em;
+    color: #222;
+}
+.copy>div>a{
+    text-decoration: none;
+    color: #222;
 }
 </style>

@@ -7,10 +7,12 @@
             <label for="odpowiedzialny" class="label">Odpowiedzialny: </label>
             <input type="text" name="odpowiedzialny" id="odpowiedzialny" v-model="odpowiedzialny" class="input">
             <label for="data" class="label">Data wykonania: </label>
-            <input type="text" name="data" id="data" v-model="data" class="input">
+            <input type="date" name="data" id="data" v-model="data" class="input">
             <label for="stan" class="label">Stan wykonania: </label>
             <input type="text" name="stan" id="stan" v-model="stan" class="input">
-            <button @click="addTodo()">Add a todo!</button>
+            <div :class="warn">Wpisz poprawnie dane!</div>
+            <button class="add" @click="addTodo()">Add a todo!</button>
+            <button class="cofnij" @click="goBack()">Cofnij!</button>
         </div>
     </div>
 </template>
@@ -23,7 +25,8 @@ export default {
             dzialanie: null,
             odpowiedzialny: null,
             data: null,
-            stan: null
+            stan: null,
+            warn: 'warn '
         }
     },
     methods: {
@@ -36,12 +39,16 @@ export default {
                 stan: this.stan
                 }).then(() => {
                     this.$router.push({name: "Todos"})
-                }).catch(err => {
-                    console.log(err)
-                })
+                }).catch()
             } else {
-                console.log('wpisz poprawnie')
+                this.warn += 'show-warn';
+                setTimeout(() => {
+                    this.warn = 'warn '
+                }, 3000)
             }
+        },
+        goBack(){
+            this.$router.push({name: "Todos"})
         }
     }
 }
@@ -49,7 +56,8 @@ export default {
 
 <style scoped>
 *{
-    font-family: sans-serif;
+    font-family: 'Poppins';
+    box-sizing: border-box;
 }
 .container{
     width: 60%;
@@ -59,6 +67,8 @@ export default {
     grid-template-columns: repeat(4, 1fr);
 }
 .add-todo-header{
+    font-family: 'Montserrat';
+    font-size: 2em;
     text-align: center;
     grid-column: 1 / 5;
     margin: 1em auto;
@@ -79,9 +89,18 @@ export default {
     height: 60%;
     border: 1px solid #57ACC9;
 }
-button{
-    grid-column: 2/4;
-    width: 30%;
+.add{
+    grid-column: 2/3;
+    width: 50%;
+    margin: 1.5em auto;
+    padding: .8em;
+    background: none;
+    border: 1px solid #57ACC9;
+    border-radius: .5em;
+}
+.cofnij{
+    grid-column: 3/4;
+    width: 50%;
     margin: 1.5em auto;
     padding: .8em;
     background: none;
@@ -91,5 +110,18 @@ button{
 button:hover{
     background: #57ACC9;
     cursor: pointer;
+}
+.warn{
+    grid-column: 2/4;
+    margin: 1.5em auto;
+    padding: .8em;
+    display: none;
+    background: #FF6969;
+    border-radius: 1em;
+}
+
+.show-warn{
+    display: block;
+    transition: all 1s;
 }
 </style>
