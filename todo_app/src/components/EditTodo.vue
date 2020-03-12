@@ -4,8 +4,8 @@
             <h2 class="add-todo-header">EDIT TODO</h2>
             <label for="dzialanie" class="label">Działanie: </label>
             <input type="text" name="dzialanie" id="dzialanie" v-model="dzial" class="input">
-            <label for="odpowiedzialny" class="label">Odpowiedzialny: </label>
-            <input type="text" name="odpowiedzialny" id="odpowiedzialny" v-model="odpowiedz" class="input">
+            <label for="odpowiedzialny" class="label" v-if="parent">Odpowiedzialny: </label>
+            <input type="text" name="odpowiedzialny" id="odpowiedzialny" v-model="odpowiedz" class="input" v-if="parent">
             <label for="data" class="label">Data wykonania: </label>
             <input type="date" name="data" id="data" v-model="data" class="input">
             <label for="stan" class="label">Stan wykonania: </label>
@@ -19,6 +19,8 @@
 
 <script>
 import db from '@/firebase/init'
+import firebase from 'firebase'
+
 export default {
     data(){
         return{
@@ -27,7 +29,9 @@ export default {
             data: null,
             stan: null,
             id: null,
-            warn: 'warn '
+            warn: 'warn ',
+            user: null,
+            parent: false
         }
     },
     beforeCreate(){
@@ -41,6 +45,7 @@ export default {
                 this.stan = todo.stan
                 this.id = todo.id
         })
+        
         
     },
     methods: {
@@ -67,6 +72,12 @@ export default {
         },
         goBack(){
             this.$router.push({name: "Todos"})
+        }
+    },
+    created(){
+        this.user = firebase.auth().currentUser
+        if(this.user.uid == '2WkAzY50XhbWBoV48Z3Gb8kkg8P2' || this.user.uid == 'vhznrfLWX5U2SPfPrw0f0ommpzo1'){
+            this.parent = true
         }
     }
 }

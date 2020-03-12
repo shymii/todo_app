@@ -1,7 +1,9 @@
 <template>
     <div id="todos">
+        <p class="user-logged" v-if="user">{{user.email}}</p>
+        <button class="logout" @click="logout()">Wyloguj</button>
         <div class="container">
-            <h2 class="todo-header">TODO LIST</h2>
+            <h2 class="todo-header">FAMILY TODO LIST</h2>
             <ul class="todo-list">
                 <li class="todo-list-header">
                     <div>L.p.</div>
@@ -35,25 +37,63 @@
 
 <script>
 import db from '@/firebase/init'
+import firebase from 'firebase'
+
 export default {
     data(){
         return{
-            todos: []
+            todos: [],
+            user: null
         }
     },
     methods: {
         takeTodos(){
-            let a = 0;
-            db.collection('todos').get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    let todo = doc.data()
-                    todo.id = doc.id
-                    todo.number = a+1
-                    a++
-                    this.todos.push(todo)
-                })
-            }).catch()
+            if(this.user.uid == '2WkAzY50XhbWBoV48Z3Gb8kkg8P2' || this.user.uid == 'vhznrfLWX5U2SPfPrw0f0ommpzo1'){
+                let a = 0;
+                db.collection('todos').get()
+                .then(snapshot => {
+                    snapshot.forEach(doc => {
+                        let todo = doc.data()
+                        todo.id = doc.id
+                        todo.number = a+1
+                        a++
+                        this.todos.push(todo)
+                    })
+                }).catch()
+            } else if(this.user.uid == 'Sw5ULBhLvpXKduTE80P0vs8gDwl2'){
+                let a = 0;
+                db.collection('todos').get()
+                .then(snapshot => {
+                    snapshot.forEach(doc => {
+                        let todo = doc.data()
+                        if(todo.odpowiedz == 'adam'){
+                            todo.id = doc.id
+                            todo.number = a+1
+                            a++
+                            this.todos.push(todo)
+                        }
+                    })
+                }).catch()
+            } else if(this.user.uid == 'PpbOxIGqbScd0YmERVcaXorDApt2'){
+                let a = 0;
+                db.collection('todos').get()
+                .then(snapshot => {
+                    snapshot.forEach(doc => {
+                        let todo = doc.data()
+                        if(todo.odpowiedz == 'kuba'){
+                            todo.id = doc.id
+                            todo.number = a+1
+                            a++
+                            this.todos.push(todo)
+                        }
+                    })
+                }).catch()
+            }
+        },
+        logout(){
+            firebase.auth().signOut().then(() => {
+                this.$router.push({ name: 'Login' })
+            })
         },
         goToAdd(){
             this.$router.push({name: 'AddTodo'})
@@ -71,7 +111,16 @@ export default {
         }
     },
     created(){
-        this.takeTodos()
+        
+    },
+    mounted(){
+        this.user = firebase.auth().currentUser
+        if(this.user){
+            this.takeTodos()
+        } else {
+            this.$router.push({name: 'Login'})
+        }
+        
     }
 }
 </script>
@@ -84,6 +133,30 @@ export default {
 #todos{
     overflow: hidden;
 }
+
+.user-logged{
+    position: absolute;
+    top: 0;
+    padding: .3em;
+    right: calc(5% + 80px);
+}
+
+.logout{
+    position: absolute;
+    width: 80px;
+    padding: .3em;
+    top: 0;
+    right: 5%;
+    background: none;
+    border: 1px solid #57ACC9;
+    border-radius: .3em;
+    cursor: pointer;
+}
+
+.logout:hover{
+    background: #57ACC9;
+}
+
 .container{
     width: 60%;
     margin: auto;

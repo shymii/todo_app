@@ -3,12 +3,18 @@ import VueRouter from 'vue-router'
 import AddTodo from '../components/AddTodo.vue'
 import Todos from '../components/Todos.vue'
 import EditTodo from '../components/EditTodo.vue'
+import Login from '../components/Login.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/todos',
     name: 'Todos',
     component: Todos
   },
