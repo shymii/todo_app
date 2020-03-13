@@ -3,14 +3,14 @@
         <p class="user-logged" v-if="user">{{user.email}}</p>
         <button class="logout" @click="logout()">Wyloguj</button>
         <div class="container">
-            <h2 class="todo-header">FAMILY TODO LIST</h2>
+            <h2 class="todo-header">COMPANY TODO LIST</h2>
             <ul class="todo-list">
                 <li class="todo-list-header">
                     <div>L.p.</div>
                     <div>Działanie</div>
-                    <div>Odpowiedzialny</div>
-                    <div>Data wykonania</div>
-                    <div>Stan wykonania</div>
+                    <div>Odpowiedz</div>
+                    <div>Data</div>
+                    <div>Stan</div>
                 </li>
                 <li class="todo-list-item" v-for="(todo, idx) in todos" :key="idx">
                     <div>{{ todo.number }}</div>
@@ -21,7 +21,7 @@
                     <div class="icon">
                         <img class="icon-img" @click="goEdit(todo.id)" src="../assets/edit.png" style="max-width:50%; height: auto;" alt="edit">
                     </div>
-                    <div class="icon">
+                    <div class="icon" v-if="parent">
                         <img class="icon-img" @click="delTodo(todo.id)" src="../assets/delete.png" style="max-width:50%; height: auto;" alt="delete">
                     </div>
                 </li>
@@ -43,14 +43,15 @@ export default {
     data(){
         return{
             todos: [],
-            user: null
+            user: null,
+            parent: false
         }
     },
     methods: {
         takeTodos(){
-            if(this.user.uid == '2WkAzY50XhbWBoV48Z3Gb8kkg8P2' || this.user.uid == 'vhznrfLWX5U2SPfPrw0f0ommpzo1'){
+            if(this.user.uid == '65K1ryPo96QPwogt37BwweNEfIW2'){
                 let a = 0;
-                db.collection('todos').get()
+                db.collection('todos').orderBy('timestamp').get()
                 .then(snapshot => {
                     snapshot.forEach(doc => {
                         let todo = doc.data()
@@ -60,13 +61,13 @@ export default {
                         this.todos.push(todo)
                     })
                 }).catch()
-            } else if(this.user.uid == 'Sw5ULBhLvpXKduTE80P0vs8gDwl2'){
+            } else if(this.user.uid == 'r3khhZm4fmXlQmlZOfaxggRqXOA2'){
                 let a = 0;
-                db.collection('todos').get()
+                db.collection('todos').orderBy('timestamp').get()
                 .then(snapshot => {
                     snapshot.forEach(doc => {
                         let todo = doc.data()
-                        if(todo.odpowiedz == 'adam'){
+                        if(todo.odpowiedz.includes('adam') || todo.autor == 'r3khhZm4fmXlQmlZOfaxggRqXOA2'){
                             todo.id = doc.id
                             todo.number = a+1
                             a++
@@ -74,13 +75,13 @@ export default {
                         }
                     })
                 }).catch()
-            } else if(this.user.uid == 'PpbOxIGqbScd0YmERVcaXorDApt2'){
+            } else if(this.user.uid == 't9bTV3nOcXegEpMrEg5YjBqNP3Z2'){
                 let a = 0;
-                db.collection('todos').get()
+                db.collection('todos').orderBy('timestamp').get()
                 .then(snapshot => {
                     snapshot.forEach(doc => {
                         let todo = doc.data()
-                        if(todo.odpowiedz == 'kuba'){
+                        if(todo.odpowiedz.includes('kuba') || todo.autor == 't9bTV3nOcXegEpMrEg5YjBqNP3Z2'){
                             todo.id = doc.id
                             todo.number = a+1
                             a++
@@ -120,7 +121,9 @@ export default {
         } else {
             this.$router.push({name: 'Login'})
         }
-        
+        if(this.user.uid == '65K1ryPo96QPwogt37BwweNEfIW2'){
+            this.parent = true
+        }
     }
 }
 </script>
@@ -157,76 +160,149 @@ export default {
     background: #57ACC9;
 }
 
-.container{
-    width: 60%;
-    margin: auto;
-    margin-top: 5%;
-    display: grid;
-}
+@media screen and (min-width: 1250px){
+    .container{
+        width: 60%;
+        margin: auto;
+        margin-top: 5%;
+        display: grid;
+    }
 
-.todo-header{
-    font-family: 'Montserrat';
-    margin-bottom: 3em;
-    text-align: center;
-    font-weight: 200;
-    font-size: 2em;
-}
+    .todo-header{
+        font-family: 'Montserrat';
+        margin-bottom: 3em;
+        text-align: center;
+        font-weight: 200;
+        font-size: 2em;
+    }
 
-.todo-list{
-    list-style: none;
-    display: block;
-    width: 100%;
-}
+    .todo-list{
+        list-style: none;
+        display: block;
+        width: 100%;
+    }
 
-.todo-list-header{
-    display: block;
-    display: grid;
-    grid-template-columns: .3fr 1fr 1fr 1fr 1fr .7fr;
-}
+    .todo-list-header{
+        display: block;
+        display: grid;
+        grid-template-columns: .3fr 1fr 1fr 1fr 1fr .7fr;
+    }
 
-li{
-    display: block;
-    display: grid;
-    grid-template-columns: .3fr 1fr 1fr 1fr 1fr .35fr .35fr;
-    margin-bottom: 1em;
-}
-li>div{
-    box-sizing: border-box;
-    padding: .5em;
-    text-align: center;
-    border-right: 1px solid #57ACC9;
-}
-.icon-img{
-    cursor: pointer;
-}
+    li{
+        display: block;
+        display: grid;
+        grid-template-columns: .3fr 1fr 1fr 1fr 1fr .35fr .35fr;
+        margin-bottom: 1em;
+    }
+    li>div{
+        box-sizing: border-box;
+        padding: .5em;
+        text-align: center;
+        border-right: 1px solid #57ACC9;
+    }
+    .icon-img{
+        cursor: pointer;
+    }
 
-.todo-list-header{
-    font-weight: bold;
-}
+    .todo-list-header{
+        font-weight: bold;
+    }
 
-.go-add{
-    padding: 1em;
-    background: none;
-    border: 1px solid #57ACC9;
-    border-radius: .5em;
-    margin-top: 1em;
-    justify-self: end;
-    cursor: pointer;
+    .go-add{
+        padding: 1em;
+        background: none;
+        border: 1px solid #57ACC9;
+        border-radius: .5em;
+        margin-top: 1em;
+        justify-self: end;
+        cursor: pointer;
+    }
+    .go-add:hover{
+        background: #57ACC9;
+    }
+    .copy{
+        position: fixed;
+        bottom: 0;
+        background: #eee;
+        text-align: center;
+        width: 100%;
+        font-size: .5em;
+        color: #222;
+    }
+    .copy>div>a{
+        text-decoration: none;
+        color: #222;
+    }
 }
-.go-add:hover{
-    background: #57ACC9;
-}
-.copy{
-    position: fixed;
-    bottom: 0;
-    background: #eee;
-    text-align: center;
-    width: 100%;
-    font-size: .5em;
-    color: #222;
-}
-.copy>div>a{
-    text-decoration: none;
-    color: #222;
+@media screen and (max-width: 1249px){
+    .container{
+        width: 100vw;
+        margin: auto;
+        margin-top: 10%;
+        display: grid;
+    }
+
+    .todo-header{
+        font-family: 'Montserrat';
+        margin-bottom: 3em;
+        text-align: center;
+        font-weight: 200;
+        font-size: 2em;
+    }
+
+    .todo-list{
+        list-style: none;
+        display: block;
+        width: 100%;
+    }
+
+    .todo-list-header{
+        display: block;
+        display: grid;
+        font-weight: bold;
+        grid-template-columns: .3fr 1fr 1fr 1fr 1fr .7fr;
+    }
+
+    li{
+        display: block;
+        display: grid;
+        grid-template-columns: .3fr 1fr 1fr 1fr 1fr .35fr .35fr;
+        margin-bottom: 1em;
+    }
+    li>div{
+        box-sizing: border-box;
+        padding: .05em;
+        text-align: center;
+        border-right: 1px solid #57ACC9;
+    }
+    .icon-img{
+        cursor: pointer;
+    }
+
+    .go-add{
+        padding: 1em;
+        background: none;
+        border: 1px solid #57ACC9;
+        border-radius: .5em;
+        margin-top: 1em;
+        justify-self: center;
+        cursor: pointer;
+    }
+    .go-add:hover{
+        background: #57ACC9;
+    }
+    .copy{
+        position: fixed;
+        bottom: 0;
+        background: #eee;
+        text-align: center;
+        width: 100%;
+        font-size: .5em;
+        color: #222;
+    }
+    .copy>div>a{
+        text-decoration: none;
+        color: #222;
+    }
 }
 </style>
