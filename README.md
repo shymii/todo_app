@@ -13,3 +13,7 @@ email: prac1@test.com  |  prac2@test.com
 pass: 123123
 
 idk it was school project had to do sth sorry
+
+oh and heres the link
+
+https://shymii.github.io/todo_app/
